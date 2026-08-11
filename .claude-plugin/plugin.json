@@ -1,0 +1,13 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "computer-use",
+  "version": "0.1.0",
+  "description": "Control the real Windows desktop via screenshots, mouse, and keyboard (computer use). Screenshot-driven loop: capture screen, read it with gemini-vision, then issue mouse_move/click/drag/scroll/type/key/wait actions through the bundled pyautogui engine.",
+  "author": {
+    "name": "Eternal",
+    "email": "eternal@auto-empire.local"
+  },
+  "skills": [
+    "./"
+  ]
+}
