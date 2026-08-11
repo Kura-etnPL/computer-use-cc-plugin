@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "computer-use-cc-plugin",
+  "description": "Claude Code marketplace for the computer-use desktop automation plugin.",
+  "owner": {
+    "name": "Eternal"
+  },
+  "plugins": [
+    {
+      "name": "computer-use",
+      "description": "Control the real Windows desktop via screenshots, mouse, and keyboard. Bundles an MCP server exposing screenshot, mouse_move, click, drag, scroll, type_text, key_press, and other actions.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/Kura-etnPL/computer-use-cc-plugin"
+    }
+  ]
+}
