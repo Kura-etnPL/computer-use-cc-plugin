@@ -1,35 +1,71 @@
 # computer-use plugin for Claude Code
 
-Control the real Windows desktop through Claude Code — screenshots, mouse, keyboard, drag, scroll, and more.
+Control the real Windows desktop through Claude Code with screenshots, mouse, keyboard, drag, scroll, and other computer-use primitives.
 
-This plugin rebuilds the same idea as Cursor's Computer Use for Claude Code:
+The plugin provides:
 
-- **Screenshot → vision → action loop**: capture the screen, read it with a vision model (`gemini-vision` MCP), then issue mouse/keyboard actions.
-- **Action primitives**: `screenshot`, `cursor_position`, `mouse_move`, `click`, `mouse_down`, `mouse_up`, `drag`, `scroll`, `type_text`, `key_press`, `wait`.
-- **MCP server included**: all actions are exposed as MCP tools so they appear in Claude Code's tool list.
-- **Skill included**: natural-language trigger for the screenshot-driven loop.
+- a screenshot → vision → action loop
+- MCP tools for `screenshot`, `cursor_position`, `mouse_move`, `click`, `mouse_down`, `mouse_up`, `drag`, `scroll`, `type_text`, `key_press`, and `wait`
+- a reusable `SKILL.md` describing the operating loop and safety discipline
+- a portable Windows launcher that does not require paths from the maintainer's machine
 
 ## Requirements
 
-- Windows (uses `pyautogui` for desktop automation)
-- A dedicated Python venv at `E:\CSoftware\computer-use-venv` with `pyautogui` and `fastmcp` installed.
-- `gemini-vision` MCP server for reading screenshots (Claude Code has no native vision).
+- Windows
+- Python 3.10+
+- a vision-capable tool/model for reading screenshots
 
-## Install
+Install Python dependencies in a dedicated environment:
 
-```bash
-claude plugin install computer-use@<marketplace>
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-After installing, restart Claude Code. The MCP server starts automatically and the tools appear in the tool list.
+The bundled MCP launcher resolves Python in this order:
 
-## Safety notes
+1. `COMPUTER_USE_PYTHON` environment variable
+2. `.venv\Scripts\python.exe` in the plugin root
+3. `python.exe` on `PATH`
+4. `py.exe -3`
 
-- This controls your **real mouse and keyboard**. The target window must be in the foreground.
-- Screenshots are written to `E:\Eternal\Auto_Empire\temp\computer_use\`.
-- CJK text is pasted via the clipboard (`Ctrl+V`) to avoid encoding issues.
-- `Win` key combinations (e.g. `Win+R`) are unreliable through `pyautogui` in this setup; launch applications via shell or other means.
+If you already have a dedicated stable environment, keep using it without editing repository files:
+
+```powershell
+[Environment]::SetEnvironmentVariable(
+  "COMPUTER_USE_PYTHON",
+  "D:\\path\\to\\your\\venv\\Scripts\\python.exe",
+  "User"
+)
+```
+
+## Install as a Claude Code marketplace
+
+Add this repository as a marketplace, then install the `computer-use` plugin from it using Claude Code's plugin manager. The repository includes both `.claude-plugin/marketplace.json` and `.claude-plugin/plugin.json`.
+
+After installation, restart Claude Code so the MCP server is loaded.
+
+## Safety model
+
+This plugin controls the **real mouse and keyboard** of the current Windows session.
+
+- Keep the intended target window in the foreground.
+- `pyautogui.FAILSAFE` is enabled, so moving the mouse to a screen corner can abort automation.
+- Re-screenshot after significant actions instead of blindly repeating clicks.
+- Treat destructive or externally consequential actions such as deleting, paying, publishing, submitting, or sending as confirmation-gated operations.
+- Store screenshots in an OS/user temporary directory or another path chosen by the caller; no maintainer-specific path is required.
+
+## Development
+
+Validate the repository locally:
+
+```powershell
+python -m compileall -q scripts
+python -m pip install -r requirements.txt
+```
+
+GitHub Actions runs equivalent validation on Windows for pushes and pull requests.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
